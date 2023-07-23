@@ -418,3 +418,4 @@ dtw_distances = calculate_dtw_distances(listOfTrajectories)
 np.set_printoptions(threshold=np.inf)  # Set numpy display option to print full array
 print("Dynamic Time Warping Distances:")
 print(squareform(dtw_distances))      
+ChNGWS
