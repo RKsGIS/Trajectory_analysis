@@ -245,8 +245,6 @@ def solveQueryWithoutRTree(r: region.region, trajectories: List[Trajectory]) -> 
     return found_trajectories
 
 ## to verify 
-
-
 queryRegion = region.region(point.point(0.0012601754558545508, 0.0027251228043638775, 0.0), 0.00003)
 foundTrajectories = solveQueryWithoutRTree(queryRegion, listOfTrajectories)
 
@@ -305,15 +303,22 @@ for traj_number, distance in closest_pair_distances.items():
 
 # Simple Point class definition
 class Point:
-    def _init_(self, X, Y, timestamp):
+    def __init__(self, X, Y, timestamp):
         self.X = X
         self.Y = Y
         self.timestamp = timestamp
 
 # Assuming listOfTrajectories is a list of 'region.Trajectory' objects
+listOfTrajectories = utils.importTrajectories("Trajectories")
+
+# Calculate the DTW distance between the first two trajectories
+dtw_distance_first_two = dynamicTimeWarping(listOfTrajectories[0].points, listOfTrajectories[1].points)
+print("Dynamic Time Warping Distance between the two trajectories:", dtw_distance)     
+
+# Calculate the DTW distances between all pairs of trajectories
 dtw_distances = calculate_dtw_distances(listOfTrajectories)
 
 # Print the DTW distances between all pairs of trajectories
 np.set_printoptions(threshold=np.inf)  # Set numpy display option to print full array
 print("Dynamic Time Warping Distances:")
-print(squareform(dtw_distances))      
+print(dtw_distances)

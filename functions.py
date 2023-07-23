@@ -51,36 +51,46 @@ def calculate_closest_pair_distances(trajectories):
         closest_distances[traj.number] = closest_distance
     return closest_distances
 
-def dynamicTimeWarping(trajectory1, trajectory2):
-    trajectory1_points = np.array([(point.X, point.Y) for point in trajectory1])
-    trajectory2_points = np.array([(point.X, point.Y) for point in trajectory2])
+# Function to calculate the Dynamic Time Warping distance between two trajectories
+def dynamic_time_warping(trajectory1, trajectory2):
+    len_traj1 = len(trajectory1)
+    len_traj2 = len(trajectory2)
+    
+    # Create a 2D array to store the DTW distances
+    dtw_distances = [[0] * len_traj2 for _ in range(len_traj1)]
+    
     # Calculate the pairwise Euclidean distances between all points in both trajectories
-    distance_matrix = cdist(trajectory1_points, trajectory2_points, )
-    # Initialize the cumulative cost matrix
-    cumulative_cost = np.zeros((len(trajectory1_points), len(trajectory2_points)))
-    # Fill the cumulative cost matrix
-    cumulative_cost[0, 0] = distance_matrix[0, 0]
-    for i in range(1, len(trajectory1_points)):
-        cumulative_cost[i, 0] = distance_matrix[i, 0] + cumulative_cost[i - 1, 0]
-    for j in range(1, len(trajectory2_points)):
-        cumulative_cost[0, j] = distance_matrix[0, j] + cumulative_cost[0, j - 1]
-    for i in range(1, len(trajectory1_points)):
-        for j in range(1, len(trajectory2_points)):
-            cumulative_cost[i, j] = distance_matrix[i, j] + min(
-                cumulative_cost[i - 1, j], cumulative_cost[i, j - 1], cumulative_cost[i - 1, j - 1])
-
+    for i in range(len_traj1):
+        for j in range(len_traj2):
+            dtw_distances[i][j] = pointDistance(trajectory1[i], trajectory2[j])
+    
+    # Initialize the first row and first column of the DTW distances array
+    for i in range(1, len_traj1):
+        dtw_distances[i][0] += dtw_distances[i - 1][0]
+    for j in range(1, len_traj2):
+        dtw_distances[0][j] += dtw_distances[0][j - 1]
+    
+    # Fill the rest of the DTW distances array using dynamic programming
+    for i in range(1, len_traj1):
+        for j in range(1, len_traj2):
+            dtw_distances[i][j] += min(dtw_distances[i - 1][j],
+                                      dtw_distances[i][j - 1],
+                                      dtw_distances[i - 1][j - 1])
+    
     # Return the DTW distance between the two trajectories
-    return cumulative_cost[-1, -1]
+    return dtw_distances[-1][-1]
 
 # Function to calculate the DTW distance between all pairs of trajectories
 def calculate_dtw_distances(trajectories):
     num_trajectories = len(trajectories)
     dtw_distances = np.zeros((num_trajectories, num_trajectories))
+
     for i in range(num_trajectories):
         for j in range(i, num_trajectories):
             dtw_dist = dynamicTimeWarping(trajectories[i].points, trajectories[j].points)
             dtw_distances[i, j] = dtw_dist
             dtw_distances[j, i] = dtw_dist
+
     return dtw_distances
 
 def solveQueryWithRTree(r:region,trajectories:list) -> list:
