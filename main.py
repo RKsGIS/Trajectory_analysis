@@ -3,7 +3,7 @@ import numpy as np
 import point
 import region
 import utils
-import functions_template as functions
+import functions
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import ttk
