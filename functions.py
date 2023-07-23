@@ -3,8 +3,11 @@ import trajectory
 import point
 import region
 import utils
+import numpy as np
 
 #douglas 
+
+
 
 def douglas_peucker(points, epsilon):
     """
