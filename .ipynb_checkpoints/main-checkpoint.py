@@ -11,9 +11,8 @@ from scipy.spatial.distance import euclidean
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from trajectory import Trajectory
 from matplotlib.cm import get_cmap
-
 import math
 from typing import List
 
@@ -109,66 +108,43 @@ class TrajectoryGUI:
         self.root.mainloop()
 
 # Simplify at least one of the trajectories with Douglas Peucker and/or Sliding Window Algorithm
+gui = TrajectoryGUI(listOfTrajectories)
+# Run the GUI
+gui.run()
 
-# Simplify at least one of the trajectories with Douglas Peucker and/or Sliding Window Algorithm
-def perpendicular_distance(point, line_start, line_end):
-    """
-    Calculate the perpendicular distance between a point and a line segment.
-    """
-    x, y = point
-    start_x, start_y = line_start
-    end_x, end_y = line_end
-    # Calculate the slope of the line
-    line_slope = (end_y - start_y) / (end_x - start_x)
-    # Calculate the y-intercept of the line
-    line_intercept = start_y - line_slope * start_x
-    # Calculate the perpendicular distance
-    distance = abs(line_slope * x - y + line_intercept) / np.sqrt(line_slope ** 2 + 1)
-    return distance
-
-
-def douglas_peucker(points, epsilon):
-    """
-    Simplify a given trajectory using the Douglas-Peucker algorithm.
-    """
-    if len(points) < 3:
-        return points
-
-    # Get the start and end points (numeric X and Y coordinates only)
-    start = np.array(points[0][:2])
-    end = np.array(points[-1][:2])
-
-    # Find distance from other points to the line formed by start and end
-    dist_point_to_line = [perpendicular_distance(point[:2], start, end) for point in points]
-    # Get the index of the points with the largest distance
-    max_idx = np.argmax(dist_point_to_line)
-    max_value = dist_point_to_line[max_idx]
-
-    result = []
-    if max_value > epsilon:
-        partial_results_left = douglas_peucker(points[:max_idx + 1], epsilon)
-        result += partial_results_left
-        partial_results_right = douglas_peucker(points[max_idx:], epsilon)
-        result += partial_results_right[1:]  # Exclude the duplicate point
-    else:
-        result += [points[0], points[-1]]
-
-    return result
-
-
-epsilon = 0.0001
+epsilon=0.01
 simplified_trajectories = []
 for trajectory in listOfTrajectories:
     points = [(point.X, point.Y) for point in trajectory.points]  # Extract (X, Y) coordinates from each point
-    simplified_traj = douglas_peucker(points, epsilon)
+    simplified_traj = functions.douglas_peucker(points, epsilon)
+    simplified_trajectories.append(simplified_traj)
+
+
+# Print the simplified trajectories
+for i, simplified_traj in enumerate(simplified_trajectories, start=1):
+    print(f"Simplified Trajectory {i}:")
+    for x, y in simplified_traj:
+        print(f"({x},{y})")
+
+#sliding window
+window_size = 20  # Adjust the window size based on your preference
+threshold = 0.0000089
+simplified_trajectories_sw = []
+for trajectory in listOfTrajectories:
+    points = [(point.X, point.Y) for point in trajectory.points]
+    simplified_traj = functions.sliding_window(points, window_size, threshold)
+    simplified_trajectories_sw.append(simplified_traj) 
+
+    points = [(point.X, point.Y) for point in trajectory.points]  # Extract (X, Y) coordinates from each point
+    simplified_traj = functions.douglas_peucker(points, epsilon)
     simplified_trajectories.append(simplified_traj)
 
 # Visualize original trajectory and its two simplifications
-
 class TrajectoryComparisonGUI:
-    def __init__(self, original_trajectories, simplified_trajectories):
+    def __init__(self, original_trajectories, simplified_trajectories, simplified_trajectories_sw):
         self.original_trajectories = original_trajectories
         self.simplified_trajectories = simplified_trajectories
+        self.simplified_trajectories_sw = simplified_trajectories_sw
         self.num_trajectories = len(original_trajectories)
 
         self.root = tk.Tk()
@@ -194,38 +170,82 @@ class TrajectoryComparisonGUI:
         self.ax.clear()
         original_traj = self.original_trajectories[selected_trajectory]
         simplified_traj = self.simplified_trajectories[selected_trajectory]
+        simplified_traj_sw = self.simplified_trajectories_sw[selected_trajectory]
 
         original_points = [(point.X, point.Y) for point in original_traj.points]
         simplified_points = simplified_traj
+        simplified_points_sw = simplified_traj_sw
         original_x, original_y = zip(*original_points)
         simplified_x, simplified_y = zip(*simplified_points)
+        simplified_x_sw, simplified_y_sw = zip(*simplified_points_sw)
 
-        self.ax.plot(original_x, original_y, label=f"Original Trajectory {selected_trajectory + 1}", color='blue')
+        self.ax.plot(original_x, original_y, label=f"Original Trajectory {selected_trajectory + 1}", color='blue', linestyle='dashed')
         self.ax.plot(simplified_x, simplified_y, label=f"Simplified Trajectory DP {selected_trajectory + 1}", color='red', linestyle='dashed')
+        self.ax.plot(simplified_x_sw, simplified_y_sw, label=f"Simplified Trajectory SW {selected_trajectory + 1}", color='green', linestyle='dotted', linewidth=5)
         self.ax.legend()
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
-        self.ax.set_title(f"Trajectory Comparison: Original vs. Simplified (Trajectory DP {selected_trajectory + 1})")
+        self.ax.set_title(f"Trajectory Comparison: Original vs. Simplified (Trajectory {selected_trajectory + 1})")
 
         self.canvas.draw()
 
     def run(self):
         self.root.mainloop()
 
+gui = TrajectoryComparisonGUI(listOfTrajectories, simplified_trajectories, simplified_trajectories_sw)
+gui.run()
+
 # Calculate the distance between at least two trajectories with Closest-Pair-Distance and/or Dynamic Time Warping
+################ Closest-Pair-Distance
+# Simple Point class definition
+class Point:
+    def _init_(self, X, Y, timestamp):
+        self.X = X
+        self.Y = Y
+        self.timestamp = timestamp
 
-# Build R-tree with all given 62 trajectories
+# Assuming listOfTrajectories is a list of 'region.Trajectory' objects
+closest_pair_distances = functions.calculate_closest_pair_distances(listOfTrajectories)
+
+# Print the closest pair distances for each trajectory
+for traj_number, distance in closest_pair_distances.items():
+    print("Trajectory {}: Closest Pair Distance: {}".format(traj_number, distance))
 
 
+###################### Non-Zero Closest pair distance 
+# Helper function to find a trajectory by its number
+def find_trajectory_by_number(trajectories, traj_number):
+    for traj in trajectories:
+        if traj.number == traj_number:
+            return traj
+    return None
+
+# Assuming listOfTrajectories is a list of 'region.Trajectory' objects
+closest_pair_distances = functions.calculate_closest_pair_distances(listOfTrajectories)
+
+# Print the trajectories with non-zero closest pair distances and their data points
+for traj_number, distance in closest_pair_distances.items():
+    if distance > 0.0:
+        print("Trajectory {}: Closest Pair Distance: {}".format(traj_number, distance))
+        trajectory = find_trajectory_by_number(listOfTrajectories, traj_number)
+
+################# Dynamic Time Wrapping Distance
+listOfTrajectories = utils.importTrajectories("Trajectories")
+
+# Calculate the DTW distance between the first two trajectories
+dtw_distance_first_two = functions.dynamicTimeWarping(listOfTrajectories[0].points, listOfTrajectories[1].points)
+print("Dynamic Time Warping Distance between the two trajectories:", dtw_distance_first_two)     
+
+# Calculate the DTW distances between all pairs of trajectories
+dtw_distances = functions.calculate_dtw_distances(listOfTrajectories)
+
+# Print the DTW distances between all pairs of trajectories
+np.set_printoptions(threshold=np.inf)  # Set numpy display option to print full array
+print("Dynamic Time Warping Distances:")
+print(dtw_distances)
 
 # Query the trajectories using the built R-tree and the region. Which trajectories lie in the given region?
 # This query should return the trajectories with ids 43, 45, 50, 71, 83
-
-
-
-from trajectory import Trajectory  # Update the import statement to use the class from trajectory.py
-
-
 def euclidean_distance(p1: point.point, p2: point.point) -> float:
     return math.sqrt((p1.X - p2.X) ** 2 + (p1.Y - p2.Y) ** 2)
 
@@ -254,71 +274,3 @@ if foundTrajectories:
         print(t.number)
 else:
     print("No trajectories match the query.")
-
-
-################ Closest-Pair-Distance
-import math
-# Simple Point class definition
-class Point:
-    def _init_(self, X, Y, timestamp):
-        self.X = X
-        self.Y = Y
-        self.timestamp = timestamp
-
-# Assuming listOfTrajectories is a list of 'region.Trajectory' objects
-closest_pair_distances = calculate_closest_pair_distances(listOfTrajectories)
-
-# Print the closest pair distances for each trajectory
-for traj_number, distance in closest_pair_distances.items():
-    print("Trajectory {}: Closest Pair Distance: {}".format(traj_number, distance))
-
-
-###################### Non-Zero Closest pair distance 
-import math
-
-# Simple Point class definition
-class Point:
-    def _init_(self, X, Y, timestamp):
-        self.X = X
-        self.Y = Y
-        self.timestamp = timestamp
-
-# Helper function to find a trajectory by its number
-def find_trajectory_by_number(trajectories, traj_number):
-    for traj in trajectories:
-        if traj.number == traj_number:
-            return traj
-    return None
-
-# Assuming listOfTrajectories is a list of 'region.Trajectory' objects
-closest_pair_distances = calculate_closest_pair_distances(listOfTrajectories)
-
-# Print the trajectories with non-zero closest pair distances and their data points
-for traj_number, distance in closest_pair_distances.items():
-    if distance > 0.0:
-        print("Trajectory {}: Closest Pair Distance: {}".format(traj_number, distance))
-        trajectory = find_trajectory_by_number(listOfTrajectories, traj_number)
-
-################# Dynamic Time Wrapping Distance
-
-# Simple Point class definition
-class Point:
-    def __init__(self, X, Y, timestamp):
-        self.X = X
-        self.Y = Y
-        self.timestamp = timestamp
-
-# Assuming listOfTrajectories is a list of 'region.Trajectory' objects
-listOfTrajectories = utils.importTrajectories("Trajectories")
-
-# Calculate the DTW distance between the first two trajectories
-dtw_distance_first_two = dynamicTimeWarping(listOfTrajectories[0].points, listOfTrajectories[1].points)
-print("Dynamic Time Warping Distance between the two trajectories:", dtw_distance)     
-
-# Calculate the DTW distances between all pairs of trajectories
-dtw_distances = calculate_dtw_distances(listOfTrajectories)
-
-# Print the DTW distances between all pairs of trajectories
-np.set_printoptions(threshold=np.inf)  # Set numpy display option to print full array
-print("Dynamic Time Warping Distances:")
-print(dtw_distances)

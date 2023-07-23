@@ -4,6 +4,7 @@ import point
 import region
 import utils
 
+#DouglasPeucker
 def douglas_peucker(points, epsilon):
     """Simplify a given trajectory using the Douglas-Peucker algorithm."""
     if len(points) < 3:
@@ -92,9 +93,3 @@ def calculate_dtw_distances(trajectories):
             dtw_distances[j, i] = dtw_dist
 
     return dtw_distances
-
-def solveQueryWithRTree(r:region,trajectories:list) -> list:
-    return None
-
-def solveQueryWithoutRTree(r:region,trajectories:list) -> list:
-    return None

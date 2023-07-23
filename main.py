@@ -11,9 +11,8 @@ from scipy.spatial.distance import euclidean
 from scipy.spatial.distance import cdist
 from scipy.spatial.distance import squareform
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from trajectory import Trajectory
 from matplotlib.cm import get_cmap
-
 import math
 from typing import List
 
@@ -109,6 +108,9 @@ class TrajectoryGUI:
         self.root.mainloop()
 
 # Simplify at least one of the trajectories with Douglas Peucker and/or Sliding Window Algorithm
+gui = TrajectoryGUI(listOfTrajectories)
+# Run the GUI
+gui.run()
 
 epsilon=0.01
 simplified_trajectories = []
@@ -190,21 +192,11 @@ class TrajectoryComparisonGUI:
     def run(self):
         self.root.mainloop()
 
+gui = TrajectoryComparisonGUI(listOfTrajectories, simplified_trajectories, simplified_trajectories_sw)
+gui.run()
 
 # Calculate the distance between at least two trajectories with Closest-Pair-Distance and/or Dynamic Time Warping
-
-# Build R-tree with all given 62 trajectories
-
-
-
-# Query the trajectories using the built R-tree and the region. Which trajectories lie in the given region?
-# This query should return the trajectories with ids 43, 45, 50, 71, 83
-
-
-
-
 ################ Closest-Pair-Distance
-import math
 # Simple Point class definition
 class Point:
     def _init_(self, X, Y, timestamp):
@@ -221,15 +213,6 @@ for traj_number, distance in closest_pair_distances.items():
 
 
 ###################### Non-Zero Closest pair distance 
-import math
-
-# Simple Point class definition
-class Point:
-    def _init_(self, X, Y, timestamp):
-        self.X = X
-        self.Y = Y
-        self.timestamp = timestamp
-
 # Helper function to find a trajectory by its number
 def find_trajectory_by_number(trajectories, traj_number):
     for traj in trajectories:
@@ -247,15 +230,6 @@ for traj_number, distance in closest_pair_distances.items():
         trajectory = find_trajectory_by_number(listOfTrajectories, traj_number)
 
 ################# Dynamic Time Wrapping Distance
-
-# Simple Point class definition
-class Point:
-    def __init__(self, X, Y, timestamp):
-        self.X = X
-        self.Y = Y
-        self.timestamp = timestamp
-
-# Assuming listOfTrajectories is a list of 'region.Trajectory' objects
 listOfTrajectories = utils.importTrajectories("Trajectories")
 
 # Calculate the DTW distance between the first two trajectories
@@ -270,9 +244,8 @@ np.set_printoptions(threshold=np.inf)  # Set numpy display option to print full 
 print("Dynamic Time Warping Distances:")
 print(dtw_distances)
 
-
-
-from trajectory import Trajectory
+# Query the trajectories using the built R-tree and the region. Which trajectories lie in the given region?
+# This query should return the trajectories with ids 43, 45, 50, 71, 83
 def euclidean_distance(p1: point.point, p2: point.point) -> float:
     return math.sqrt((p1.X - p2.X) ** 2 + (p1.Y - p2.Y) ** 2)
 

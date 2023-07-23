@@ -2,8 +2,7 @@
 import numpy as np
 import point
 import trajectory
-from trajectory import Trajectory  # Update the import statement to use the class from trajectory.py
-
+from trajectory import Trajectory  
 import math
 from glob import glob
 
