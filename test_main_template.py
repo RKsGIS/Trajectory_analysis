@@ -22,6 +22,20 @@ def test_trajectory_gui():
     # Call the run method to start the GUI
     gui.run()
 
+def test_trajectory_comparison_gui():
+    # Use the original listOfTrajectories for testing
+    original_trajectories = main_template.listOfTrajectories
+
+    simplified_trajectories = main_template.simplified_trajectories
+
+    # Initialize TrajectoryComparisonGUI with the  trajectories
+    gui = main_template.TrajectoryComparisonGUI(original_trajectories, simplified_trajectories)
+
+    # Set the selected trajectory to the last one and test the plot_trajectory_comparison method
+    gui.run()
+    # Add a pause to display the plot (you may need to close the plot manually)
+    plt.pause(1)
+
 # Run the tests
 if __name__ == "__main__":
     pytest.main()
