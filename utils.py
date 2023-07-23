@@ -2,6 +2,8 @@
 import numpy as np
 import point
 import trajectory
+from trajectory import Trajectory  # Update the import statement to use the class from trajectory.py
+
 import math
 from glob import glob
 
@@ -13,7 +15,7 @@ def importTrajectory(filename:str,number:int) -> trajectory:
     data = np.loadtxt(filename, delimiter=' ',dtype=str)
 
     # Create trajectory
-    currTrajectory = trajectory.trajectory(number)
+    currTrajectory = Trajectory(number)
 
     # Convert data into points
     for entry in data:

@@ -1,6 +1,6 @@
 # imports
 import point
-class trajectory():
+class Trajectory():
     # Initialization method of trajectory with an unique id
     def __init__(self,number) -> None:
         self.number = number

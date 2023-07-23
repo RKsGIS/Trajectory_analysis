@@ -11,6 +11,11 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from matplotlib.cm import get_cmap
+
+import math
+from typing import List
+
+import trajectory 
 # Import trajectories
 listOfTrajectories = utils.importTrajectories("Trajectories")
 # # print(listOfTrajectories)
@@ -212,14 +217,45 @@ class TrajectoryComparisonGUI:
 
 # Build R-tree with all given 62 trajectories
 
+
+
 # Query the trajectories using the built R-tree and the region. Which trajectories lie in the given region?
 # This query should return the trajectories with ids 43, 45, 50, 71, 83
 
 
-# queryRegion = region.region(point.point(0.0012601754558545508,0.0027251228043638775,0.0),0.00003)
-# foundTrajectories = functions.solveQueryWithRTree(queryRegion,listOfTrajectories)
-# if foundTrajectories != None:
-#     if len(foundTrajectories)==0:
-#         print("No trajectories match the query.")
-#     for t in foundTrajectories:
-#         print(t)
+
+from trajectory import Trajectory  # Update the import statement to use the class from trajectory.py
+
+
+def euclidean_distance(p1: point.point, p2: point.point) -> float:
+    return math.sqrt((p1.X - p2.X) ** 2 + (p1.Y - p2.Y) ** 2)
+
+def point_in_region(query_point: point.point, query_region: region.region) -> bool:
+    distance = euclidean_distance(query_point, query_region.center)
+    return distance <= query_region.radius
+
+def solveQueryWithoutRTree(r: region.region, trajectories: List[Trajectory]) -> List[Trajectory]:
+    found_trajectories = []
+    
+    for traj in trajectories:
+        for p in traj.points:
+            if point_in_region(p, r):
+                found_trajectories.append(traj)
+                break  # Add the trajectory once and move to the next one
+
+    return found_trajectories
+
+## to verify 
+
+
+queryRegion = region.region(point.point(0.0012601754558545508, 0.0027251228043638775, 0.0), 0.00003)
+foundTrajectories = solveQueryWithoutRTree(queryRegion, listOfTrajectories)
+
+if foundTrajectories:
+    print("Trajectories within the query region:")
+    for t in foundTrajectories:
+        print(t.number)
+else:
+    print("No trajectories match the query.")
+
+    
