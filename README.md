@@ -80,6 +80,7 @@ Trajectory_analysis/
 ## Project Authors
 - [Ram Kumar Muthusamy](mailto:ramkumar.m@uni-muenster.de)
 - [Mohamed Shamsudeen](mailto:shamsudeen.m@uni-muenster.de)
+- [Sanju Shree Suresh Kuma]([https://github.com/sanju156)
 
 ---
 
